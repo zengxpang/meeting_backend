@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
@@ -14,6 +14,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { LoginGuard } from './login.guard';
 import { PermissionGuard } from './permission.guard';
+import { FormatResponseInterceptor } from './format-response.interceptor';
+import { InvokeRecordInterceptor } from './invoke-record.interceptor';
 
 @Module({
   imports: [
@@ -69,6 +71,14 @@ import { PermissionGuard } from './permission.guard';
     {
       provide: APP_GUARD,
       useClass: PermissionGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: FormatResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: InvokeRecordInterceptor,
     },
   ],
 })
