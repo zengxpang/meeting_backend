@@ -15,6 +15,10 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LoginUserVo } from './vo/login-user.vo';
+import { RequireLogin, UserInfo } from '../custom.decorator';
+import { UserInfoVo } from './vo/user-info.vo';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -88,6 +92,14 @@ export class UserController {
     }
   }
 
+  // ---
+  @Get('init-data')
+  async initData() {
+    await this.userService.initData();
+    return '初始化成功';
+  }
+
+  // ---
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto) {
     return await this.userService.register(registerUser);
@@ -105,12 +117,7 @@ export class UserController {
     return '验证码已发送';
   }
 
-  @Get('init-data')
-  async initData() {
-    await this.userService.initData();
-    return '初始化成功';
-  }
-
+  // ---
   @Post('login')
   async login(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser);
@@ -123,6 +130,7 @@ export class UserController {
     return this.setToken(vo);
   }
 
+  // ---
   @Get('refresh')
   async refresh(@Query('refreshToken') refreshToken: string) {
     return await this.refreshToken(refreshToken);
@@ -131,5 +139,71 @@ export class UserController {
   @Get('admin/refresh')
   async adminRefresh(@Query('refreshToken') refreshToken: string) {
     return await this.refreshToken(refreshToken, true);
+  }
+
+  // ---
+  @Get('info')
+  @RequireLogin()
+  async info(@UserInfo('userId') userId: number) {
+    const user = await this.userService.findUserDetailById(userId);
+    const vo = new UserInfoVo();
+    vo.id = user.id;
+    vo.username = user.username;
+    vo.nickName = user.nickName;
+    vo.email = user.email;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.isFreeze = user.isFreeze;
+    vo.createTime = user.createTime;
+    vo.updateTime = user.updateTime;
+    return vo;
+  }
+
+  // ---
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() updateUserPassword: UpdateUserPasswordDto,
+  ) {
+    return await this.userService.updatePassword(userId, updateUserPassword);
+  }
+
+  @Get('update_password/captcha')
+  async updatePasswordCaptcha(@Query('address') address: string) {
+    const code = Math.random().toString().slice(2, 8);
+    await this.redisService.set(
+      `update_password_captcha_${address}`,
+      code,
+      60 * 5,
+    );
+    await this.emailService.sendMail({
+      to: address,
+      subject: '修改密码验证码',
+      html: `您的修改密码验证码为${code},有效期为5分钟`,
+    });
+    return '验证码已发送';
+  }
+
+  // ---
+  @Post(['update', 'admin/update'])
+  @RequireLogin()
+  async update(
+    @UserInfo('userId') userId: number,
+    @Body() updateUser: UpdateUserDto,
+  ) {
+    return await this.userService.update(userId, updateUser);
+  }
+
+  @Get('update/captcha')
+  async updateCaptcha(@Query('address') address: string) {
+    const code = Math.random().toString().slice(2, 8);
+    await this.redisService.set(`update_captcha_${address}`, code, 60 * 5);
+    await this.emailService.sendMail({
+      to: address,
+      subject: '修改信息验证码',
+      html: `您的修改信息验证码为${code},有效期为5分钟`,
+    });
+    return '验证码已发送';
   }
 }
