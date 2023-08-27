@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Inject,
+  ParseIntPipe,
   Post,
   Query,
   UnauthorizedException,
@@ -19,6 +22,7 @@ import { RequireLogin, UserInfo } from '../custom.decorator';
 import { UserInfoVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { generateParseIntPipe } from '../utils';
 
 @Controller('user')
 export class UserController {
@@ -205,5 +209,34 @@ export class UserController {
       html: `您的修改信息验证码为${code},有效期为5分钟`,
     });
     return '验证码已发送';
+  }
+
+  @Get('freeze')
+  async freeze(@Query('userId') userId: number) {
+    await this.userService.freezeUserById(userId);
+    return '冻结成功';
+  }
+
+  @Get('list')
+  async list(
+    @Query('pageNum', new DefaultValuePipe(1), generateParseIntPipe('pageNum'))
+    pageNum: number,
+    @Query(
+      'pageSize',
+      new DefaultValuePipe(10),
+      generateParseIntPipe('pageSize'),
+    )
+    pageSize: number,
+    @Query('userName') userName: string,
+    @Query('nickName') nickName: string,
+    @Query('email') email: string,
+  ) {
+    return await this.userService.findUserByPage({
+      pageNum,
+      pageSize,
+      userName,
+      nickName,
+      email,
+    });
   }
 }

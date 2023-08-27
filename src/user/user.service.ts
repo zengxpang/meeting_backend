@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { User } from './entities/user.entity';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -230,5 +230,61 @@ export class UserService {
       this.logger.error(e, UserService);
       return '用户信息修改失败';
     }
+  }
+
+  async freezeUserById(userId: number) {
+    const user = await this.userRepository.findOneBy({
+      id: userId,
+    });
+    user.isFreeze = true;
+    await this.userRepository.save(user);
+  }
+
+  async findUserByPage({
+    pageNum,
+    pageSize,
+    userName,
+    nickName,
+    email,
+  }: {
+    pageNum: number;
+    pageSize: number;
+    userName: string;
+    nickName: string;
+    email: string;
+  }) {
+    const skipCount = (pageNum - 1) * pageSize;
+    const condition: Record<string, any> = {};
+    if (userName) {
+      // 模糊查询 %王% （包含王字）  王%（王开头的）
+      condition.username = Like(`%${userName}%`);
+    }
+    if (nickName) {
+      condition.nickName = Like(`%${nickName}%`);
+    }
+    if (email) {
+      condition.email = Like(`%${email}%`);
+    }
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      select: [
+        'id',
+        'username',
+        'nickName',
+        'email',
+        'headPic',
+        'phoneNumber',
+        'isFreeze',
+        'isAdmin',
+        'createTime',
+        'updateTime',
+      ],
+      skip: skipCount, // 从哪里开始取 SELECT * FROM `user` LIMIT 2,4 （从第2条开始，也就是第3个，取了4条数据）
+      take: pageSize, // 取多少条
+      where: condition,
+    });
+    return {
+      users,
+      totalCount,
+    };
   }
 }
