@@ -48,6 +48,8 @@ export class LoginGuard implements CanActivate {
 
     if (!authorization) {
       throw new UnauthorizedException('用户未登录');
+      // 没必要每种类型都定义一个catch，可以统一在一个HttpException里处理
+      // throw new UnLoginException();
     }
     try {
       const token = authorization.split(' ')[1];

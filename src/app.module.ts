@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
@@ -16,6 +16,8 @@ import { LoginGuard } from './login.guard';
 import { PermissionGuard } from './permission.guard';
 import { FormatResponseInterceptor } from './format-response.interceptor';
 import { InvokeRecordInterceptor } from './invoke-record.interceptor';
+import { UnLoginFilter } from './unLogin.filter';
+import { CustomExceptionFilter } from './custom-exception.filter';
 
 @Module({
   imports: [
@@ -79,6 +81,14 @@ import { InvokeRecordInterceptor } from './invoke-record.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: InvokeRecordInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: UnLoginFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CustomExceptionFilter,
     },
   ],
 })
