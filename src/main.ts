@@ -19,6 +19,8 @@ async function bootstrap() {
     app,
     SwaggerModule.createDocument(app, config),
   );
+  // 前端用了proxy代理不用后端开跨域
+  // app.enableCors();
   const configService = app.get(ConfigService);
   await app.listen(configService.get('NEST_SERVER_PORT'));
 }

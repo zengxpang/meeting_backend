@@ -16,6 +16,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
         code: exception.getStatus(),
         message: 'fail',
         data: exception.message,
+        success: false,
       })
       .end();
   }

@@ -17,6 +17,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
           code: response.statusCode,
           message: 'success',
           data,
+          success: true,
         };
       }),
     );
