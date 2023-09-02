@@ -258,7 +258,6 @@ export class UserController {
     return vo;
   }
 
-  @ApiBearerAuth()
   @ApiBody({
     type: UpdateUserPasswordDto,
   })
@@ -273,15 +272,10 @@ export class UserController {
     type: String,
   })
   @Post(['update_password', 'admin/update_password'])
-  @RequireLogin()
-  async updatePassword(
-    @UserInfo('userId') userId: number,
-    @Body() updateUserPassword: UpdateUserPasswordDto,
-  ) {
-    return await this.userService.updatePassword(userId, updateUserPassword);
+  async updatePassword(@Body() updateUserPassword: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(updateUserPassword);
   }
 
-  @ApiBearerAuth()
   @ApiQuery({
     name: 'address',
     type: String,
@@ -292,7 +286,6 @@ export class UserController {
     description: '验证码已发送',
   })
   @Get('update_password/captcha')
-  @RequireLogin()
   async updatePasswordCaptcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
     await this.redisService.set(

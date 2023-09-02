@@ -180,10 +180,7 @@ export class UserService {
     return user;
   }
 
-  async updatePassword(
-    userId: number,
-    updateUserPassword: UpdateUserPasswordDto,
-  ) {
+  async updatePassword(updateUserPassword: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(
       `update_password_captcha_${updateUserPassword.email}`,
     );
@@ -194,8 +191,12 @@ export class UserService {
       throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
     }
     const foundUser = await this.userRepository.findOneBy({
-      id: userId,
+      username: updateUserPassword.username,
     });
+
+    if (foundUser.email !== updateUserPassword.email) {
+      throw new HttpException('用户名和邮箱不匹配', HttpStatus.BAD_REQUEST);
+    }
 
     foundUser.password = md5(updateUserPassword.password);
 
