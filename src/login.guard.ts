@@ -14,6 +14,7 @@ import { Permission } from './user/entities/permission.entity';
 interface JwtUserData {
   userId: number;
   username: string;
+  email: string;
   roles: string[];
   permissions: Permission[];
 }
@@ -58,6 +59,7 @@ export class LoginGuard implements CanActivate {
         userId: data.userId,
         username: data.username,
         roles: data.roles,
+        email: data.email,
         permissions: data.permissions,
       };
       return true;

@@ -10,6 +10,8 @@ import {
   Post,
   Query,
   UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -33,6 +35,10 @@ import {
 } from '@nestjs/swagger';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { UserListVo } from './vo/user-list.vo';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+import * as path from 'path';
+import { storage } from 'src/my-file-storage';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -54,6 +60,7 @@ export class UserController {
         userId: vo.userInfo.id,
         username: vo.userInfo.username,
         roles: vo.userInfo.roles,
+        email: vo.userInfo.email,
         permissions: vo.userInfo.permissions,
       },
       {
@@ -81,6 +88,7 @@ export class UserController {
         {
           userId: user.id,
           username: user.username,
+          email: user.email,
           roles: user.roles,
           permissions: user.permissions,
         },
@@ -325,20 +333,15 @@ export class UserController {
   }
 
   @ApiBearerAuth()
-  @ApiQuery({
-    name: 'address',
-    type: String,
-    description: '邮箱地址',
-  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: '验证码已发送',
   })
   @Get('update/captcha')
   @RequireLogin()
-  async updateCaptcha(@Query('address') address: string) {
+  async updateCaptcha(@UserInfo('email') address: string) {
     const code = Math.random().toString().slice(2, 8);
-    await this.redisService.set(`update_captcha_${address}`, code, 60 * 5);
+    await this.redisService.set(`update_user_captcha_${address}`, code, 60 * 5);
     await this.emailService.sendMail({
       to: address,
       subject: '修改信息验证码',
@@ -417,5 +420,33 @@ export class UserController {
       nickName,
       email,
     });
+  }
+
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads',
+      storage,
+      limits: {
+        fieldSize: 1024 * 1024 * 3,
+      },
+      fileFilter: (req, file, cb) => {
+        const extname = path.extname(file.originalname);
+        if (['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
+          cb(null, true);
+        } else {
+          cb(
+            new BadRequestException(
+              '文件格式错误,只支持.png、.jpeg、.jpg、.gif格式',
+            ),
+            false,
+          );
+        }
+      },
+    }),
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('file', file);
+    return file.path;
   }
 }
