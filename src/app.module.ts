@@ -18,6 +18,8 @@ import { FormatResponseInterceptor } from './format-response.interceptor';
 import { InvokeRecordInterceptor } from './invoke-record.interceptor';
 import { UnLoginFilter } from './unLogin.filter';
 import { CustomExceptionFilter } from './custom-exception.filter';
+import { MeetingRoomModule } from './meeting-room/meeting-room.module';
+import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 
 @Module({
   imports: [
@@ -44,7 +46,7 @@ import { CustomExceptionFilter } from './custom-exception.filter';
           database: configService.get('MYSQL_SERVER_DATABASE'),
           synchronize: true,
           logging: true,
-          entities: [User, Role, Permission],
+          entities: [User, Role, Permission, MeetingRoom],
           poolSize: 10,
           connectorPackage: 'mysql2',
         };
@@ -58,6 +60,7 @@ import { CustomExceptionFilter } from './custom-exception.filter';
     UserModule,
     RedisModule,
     EmailModule,
+    MeetingRoomModule,
   ],
   controllers: [AppController],
   providers: [
