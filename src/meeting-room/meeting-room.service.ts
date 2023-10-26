@@ -79,8 +79,8 @@ export class MeetingRoomService {
     const meetingRoom = await this.meetingRoomRepository.findOneBy({
       name: createMeetingRoomDto.name,
     });
-    if (!meetingRoom) {
-      throw new BadRequestException('会议室不存在');
+    if (meetingRoom) {
+      throw new BadRequestException('会议室已存在');
     }
 
     return await this.meetingRoomRepository.insert(createMeetingRoomDto);
