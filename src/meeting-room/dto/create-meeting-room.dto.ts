@@ -22,17 +22,17 @@ export class CreateMeetingRoomDto {
   })
   location: string;
 
-  @IsNotEmpty({
-    message: '会议室设备不能为空',
-  })
+  // @IsNotEmpty({
+  //   message: '会议室设备不能为空',
+  // })
   @MaxLength(50, {
     message: '会议室设备不能超过50个字符',
   })
   equipment: string;
 
-  @IsNotEmpty({
-    message: '会议室描述不能为空',
-  })
+  // @IsNotEmpty({
+  //   message: '会议室描述不能为空',
+  // })
   @MaxLength(100, {
     message: '会议室描述不能超过100个字符',
   })

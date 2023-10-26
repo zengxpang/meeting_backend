@@ -17,6 +17,11 @@ import { generateParseIntPipe } from '../utils';
 export class MeetingRoomController {
   constructor(private readonly meetingRoomService: MeetingRoomService) {}
 
+  @Get('initData')
+  async initData() {
+    return await this.meetingRoomService.initData();
+  }
+
   @Get('list')
   async list(
     @Query('pageNum', new DefaultValuePipe(1), generateParseIntPipe('pageNum'))
@@ -42,7 +47,6 @@ export class MeetingRoomController {
 
   @Post('create')
   async create(@Body() createMeetingRoomDto: CreateMeetingRoomDto) {
-    console.log(222, createMeetingRoomDto);
     return await this.meetingRoomService.create(createMeetingRoomDto);
   }
 
