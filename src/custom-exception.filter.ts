@@ -10,14 +10,17 @@ import { Response } from 'express';
 export class CustomExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();
-    response.statusCode = exception.getStatus();
-    const message = exception.getResponse();
+
+    const statusCode = exception.getStatus();
+    const res = exception.getResponse() as { message: string[] };
 
     response
       .json({
-        code: exception.getStatus(),
+        code: statusCode,
         message: 'fail',
-        data: message,
+        data: Array.isArray(res?.message)
+          ? res?.message?.join('、')
+          : exception.message,
         success: false,
       })
       .end();
