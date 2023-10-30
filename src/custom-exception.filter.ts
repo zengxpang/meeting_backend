@@ -13,6 +13,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
 
     const statusCode = exception.getStatus();
     const res = exception.getResponse() as { message: string[] };
+    response.statusCode = statusCode;
 
     response
       .json({

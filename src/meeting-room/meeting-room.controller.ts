@@ -30,9 +30,7 @@ import { MeetingRoomListVo } from './vo/meeting-room-list.vo';
 export class MeetingRoomController {
   constructor(private readonly meetingRoomService: MeetingRoomService) {}
 
-  @ApiBearerAuth()
   @Get('initData')
-  @RequireLogin()
   async initData() {
     return await this.meetingRoomService.initData();
   }

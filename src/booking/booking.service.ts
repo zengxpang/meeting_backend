@@ -20,17 +20,17 @@ export class BookingService {
 
   async initData() {
     const user1 = await this.entityManager.findOneBy(User, {
-      id: 4,
+      id: 1,
     });
     const user2 = await this.entityManager.findOneBy(User, {
-      id: 5,
+      id: 2,
     });
 
     const room1 = await this.entityManager.findOneBy(MeetingRoom, {
-      id: 9,
+      id: 1,
     });
     const room2 = await this.entityManager.findOneBy(MeetingRoom, {
-      id: 10,
+      id: 2,
     });
 
     const booking1 = new Booking();
