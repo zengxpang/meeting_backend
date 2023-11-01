@@ -38,7 +38,9 @@ export class QrcodeService {
 
   async generate() {
     const uuid = randomUUID();
-    const dataUrl = await qrcode.toDataURL(uuid);
+    const dataUrl = await qrcode.toDataURL(
+      `http://192.168.2.37:8000/loginConfirm?qrcodeId=${uuid}`,
+    );
 
     await this.redisService.hSet(`qrcode_${uuid}`, {
       status: 'no-scan',
