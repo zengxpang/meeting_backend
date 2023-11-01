@@ -16,4 +16,15 @@ export class RedisService {
       await this.redisClient.expire(key, ttl);
     }
   }
+
+  async hGetAll(key: string): Promise<any> {
+    return await this.redisClient.hGetAll(key);
+  }
+
+  async hSet(key: string, value: any, ttl: number = 30 * 60) {
+    await this.redisClient.hSet(key, value);
+    if (ttl) {
+      await this.redisClient.expire(key, ttl);
+    }
+  }
 }
