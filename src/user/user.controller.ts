@@ -54,32 +54,6 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
-  setToken(vo: LoginUserVo) {
-    vo.accessToken = this.jwtService.sign(
-      {
-        userId: vo.userInfo.id,
-        username: vo.userInfo.username,
-        roles: vo.userInfo.roles,
-        email: vo.userInfo.email,
-        permissions: vo.userInfo.permissions,
-      },
-      {
-        expiresIn:
-          this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN') ?? '30m',
-      },
-    );
-    vo.refreshToken = this.jwtService.sign(
-      {
-        userId: vo.userInfo.id,
-      },
-      {
-        expiresIn:
-          this.configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN') ?? '7d',
-      },
-    );
-    return vo;
-  }
-
   async refreshToken(refreshToken: string, isAdmin = false) {
     try {
       const data = this.jwtService.verify(refreshToken);
@@ -179,7 +153,7 @@ export class UserController {
   @Post('login')
   async login(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser);
-    return this.setToken(vo);
+    return this.userService.setToken(vo);
   }
 
   @ApiBody({
@@ -198,7 +172,7 @@ export class UserController {
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
-    return this.setToken(vo);
+    return this.userService.setToken(vo);
   }
 
   @ApiQuery({

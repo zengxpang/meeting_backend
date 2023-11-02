@@ -19,6 +19,8 @@ import { LoginUserVo } from './vo/login-user.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserListVo } from './vo/user-list.vo';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -35,6 +37,38 @@ export class UserService {
 
   @Inject(RedisService)
   private readonly redisService: RedisService;
+
+  @Inject(JwtService)
+  private readonly jwtService: JwtService;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
+
+  setToken(vo: LoginUserVo) {
+    vo.accessToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+        username: vo.userInfo.username,
+        roles: vo.userInfo.roles,
+        email: vo.userInfo.email,
+        permissions: vo.userInfo.permissions,
+      },
+      {
+        expiresIn:
+          this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN') ?? '30m',
+      },
+    );
+    vo.refreshToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+      },
+      {
+        expiresIn:
+          this.configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN') ?? '7d',
+      },
+    );
+    return vo;
+  }
 
   async register(user: RegisterUserDto) {
     const captcha = await this.redisService.get(`captcha_${user.email}`);
