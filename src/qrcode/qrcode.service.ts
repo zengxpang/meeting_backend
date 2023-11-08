@@ -10,23 +10,6 @@ import { RedisService } from '../redis/redis.service';
 import { UserService } from '../user/user.service';
 import { LoginUserVo } from '../user/vo/login-user.vo';
 
-// no-scan 未扫描
-// scan-wait-confirm -已扫描，等待用户确认
-// scan-confirm 已扫描，用户同意授权
-// scan-cancel 已扫描，用户取消授权
-// expired 已过期
-interface IQrCodeInfo {
-  status:
-    | 'no-scan'
-    | 'scan-wait-confirm'
-    | 'scan-confirm'
-    | 'scan-cancel'
-    | 'expired';
-  userInfo?: {
-    userId: number;
-  };
-}
-
 @Injectable()
 export class QrcodeService {
   @Inject(RedisService)
@@ -70,7 +53,9 @@ export class QrcodeService {
         } as LoginUserVo),
       };
     }
-    return qrcodeInfo;
+    return {
+      status,
+    };
   }
 
   async confirm(qrcodeId: string, auth: string) {
