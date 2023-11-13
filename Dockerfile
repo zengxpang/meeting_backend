@@ -20,6 +20,6 @@ WORKDIR /app
 
 RUN npm install --production
 
-EXPOSE 3000
+EXPOSE 30086
 
 CMD ["node", "/app/main.js"]

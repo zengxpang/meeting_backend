@@ -45,7 +45,7 @@ export class UserService {
   private readonly configService: ConfigService;
 
   setToken(vo: LoginUserVo) {
-    vo.accessToken = this.jwtService.sign(
+    vo.access_token = this.jwtService.sign(
       {
         userId: vo.userInfo.id,
         username: vo.userInfo.username,
@@ -58,7 +58,7 @@ export class UserService {
           this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN') ?? '30m',
       },
     );
-    vo.refreshToken = this.jwtService.sign(
+    vo.refresh_token = this.jwtService.sign(
       {
         userId: vo.userInfo.id,
       },
