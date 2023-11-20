@@ -23,6 +23,7 @@ import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entities/booking.entity';
 import { QrcodeModule } from './qrcode/qrcode.module';
+import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { QrcodeModule } from './qrcode/qrcode.module';
     MeetingRoomModule,
     BookingModule,
     QrcodeModule,
+    StatisticModule,
   ],
   controllers: [AppController],
   providers: [
