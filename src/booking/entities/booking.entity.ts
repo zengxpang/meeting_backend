@@ -26,8 +26,8 @@ export class Booking {
 
   @Column({
     length: 20,
-    comment: '状态(申请中、审批通过、审批驳回、已解除)',
-    default: '申请中',
+    comment: '状态(申请中=1、审批通过=2、审批驳回=3、已解除=4)',
+    default: '1',
   })
   status: string;
 

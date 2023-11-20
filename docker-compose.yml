@@ -6,24 +6,25 @@ services:
       dockerfile: ./Dockerfile
     restart: 'always'
     depends_on:
-      - mysql-container
-      - redis-container
+      - mysql-container3
+      - redis-container3
     ports:
-      - '3000:3000'
+      - '30086:30086'
     networks:
-      - common-network
-  mysql-container:
+      - common-network3
+    dns: 114.114.114.114
+  mysql-container3:
     image: mysql
     volumes:
-      - /Users/xpangzeng/Desktop/dockerVolumn/mysql
+      - /Users/zengxpang/mysql2:/var/lib/mysql
     networks:
-      - common-network
-  redis-container:
+      - common-network3
+  redis-container3:
     image: redis
     volumes:
-      - /Users/xpangzeng/Desktop/dockerVolumn/redis
+      - /Users/zengxpang/redis:/data
     networks:
-      - common-network
+      - common-network3
 networks:
-  common-network:
+  common-network3:
     driver: bridge

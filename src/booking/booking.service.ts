@@ -107,11 +107,11 @@ export class BookingService {
 
     if (bookingTimeRangeStart) {
       if (!bookingTimeRangeEnd) {
-        bookingTimeRangeEnd = bookingTimeRangeStart + 60 * 60 * 1000;
+        bookingTimeRangeEnd = Number(bookingTimeRangeStart) + 60 * 60 * 1000;
       }
       condition.startTime = Between(
-        new Date(bookingTimeRangeStart),
-        new Date(bookingTimeRangeEnd),
+        new Date(Number(bookingTimeRangeStart)),
+        new Date(Number(bookingTimeRangeEnd)),
       );
     }
 
@@ -138,7 +138,7 @@ export class BookingService {
   }
 
   async apply(id: number) {
-    await this.entityManager.update(Booking, { id }, { status: '审批通过' });
+    await this.entityManager.update(Booking, { id }, { status: '2' });
     return 'success';
   }
 
@@ -149,7 +149,7 @@ export class BookingService {
         id,
       },
       {
-        status: '审批驳回',
+        status: '3',
       },
     );
     return 'success';
@@ -162,7 +162,7 @@ export class BookingService {
         id,
       },
       {
-        status: '已解除',
+        status: '4',
       },
     );
     return 'success';
