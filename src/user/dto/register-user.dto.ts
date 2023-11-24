@@ -42,4 +42,13 @@ export class RegisterUserDto {
   })
   @ApiProperty()
   captcha: string;
+
+  @ApiProperty()
+  phoneNumber: string;
+
+  @ApiProperty()
+  headPic: string;
+
+  @ApiProperty()
+  isAdmin: boolean;
 }

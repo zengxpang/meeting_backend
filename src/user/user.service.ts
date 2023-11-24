@@ -91,6 +91,18 @@ export class UserService {
     newUser.email = user.email;
     newUser.nickName = user.nickName;
 
+    if (user.phoneNumber) {
+      newUser.phoneNumber = user.phoneNumber;
+    }
+
+    if (user.headPic) {
+      newUser.headPic = user.headPic;
+    }
+
+    if (user.isAdmin) {
+      newUser.isAdmin = user.isAdmin;
+    }
+
     try {
       await this.userRepository.save(newUser);
       return '注册成功';
