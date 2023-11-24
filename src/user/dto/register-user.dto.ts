@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterUserDto {
@@ -43,12 +43,15 @@ export class RegisterUserDto {
   @ApiProperty()
   captcha: string;
 
+  @IsOptional()
   @ApiProperty()
   phoneNumber: string;
 
+  @IsOptional()
   @ApiProperty()
   headPic: string;
 
+  @IsOptional()
   @ApiProperty()
   isAdmin: boolean;
 }
