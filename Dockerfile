@@ -1,25 +1,25 @@
-FROM node:18.0-alpine3.14 as build-stage
+FROM node:18.0-alpine as build-stage
 
 WORKDIR /app
 
-COPY package.json .
+COPY package.json ./
 
-RUN npm install
+RUN npm install --package-lock-only
 
-COPY . .
+RUN npm ci
+
+COPY  . .
 
 RUN npm run build
 
-# production stage
-FROM node:18.0-alpine3.14 as production-stage
+ENV NODE_ENV production
 
-COPY --from=build-stage /app/dist /app
-COPY --from=build-stage /app/package.json /app/package.json
+# 运行'npm ci'会删除现有的node_modules目录，传入--Only=生产确保只安装生产依赖项。这确保node_modules目录尽可能优
+RUN npm ci --only=production && npm cache clean --force
 
-WORKDIR /app
+FROM node:18-alpine As production-stage
 
-RUN npm install --production
+COPY  --from=build-stage /app/node_modules ./node_modules
+COPY  --from=build-stage /app/dist ./dist
 
-EXPOSE 30086
-
-CMD ["node", "/app/main.js"]
+CMD [ "node", "dist/main.js" ]

@@ -27,6 +27,10 @@ import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: 'src/.env',
+    }),
     JwtModule.registerAsync({
       global: true,
       useFactory(configService: ConfigService) {
@@ -48,7 +52,7 @@ import { StatisticModule } from './statistic/statistic.module';
           username: configService.get('MYSQL_SERVER_USERNAME'),
           password: configService.get('MYSQL_SERVER_PASSWORD'),
           database: configService.get('MYSQL_SERVER_DATABASE'),
-          synchronize: true,
+          synchronize: false, // 生产环境不要开启。开启后会自动创建表，但是会删除数据
           logging: true,
           entities: [User, Role, Permission, MeetingRoom, Booking],
           poolSize: 10,
@@ -56,10 +60,6 @@ import { StatisticModule } from './statistic/statistic.module';
         };
       },
       inject: [ConfigService],
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: 'src/.env',
     }),
     UserModule,
     RedisModule,

@@ -1,8 +1,5 @@
-dist
-node_modules
-README.md
-.git/
-DS_Store
-.vscode/
-.idea/
 .dockerignore
+Dockerfile
+node_modules
+npm-debug.log
+dist
