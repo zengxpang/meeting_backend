@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+/deploy/mysql
+/deploy/redis
+
 # Logs
 logs
 *.log
