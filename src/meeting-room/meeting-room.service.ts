@@ -123,9 +123,15 @@ export class MeetingRoomService {
   }
 
   async deleteById(id: number) {
-    await this.meetingRoomRepository.delete({
-      id,
-    });
-    return '删除成功';
+    try {
+      await this.meetingRoomRepository.delete({
+        id,
+      });
+      return '删除成功';
+    } catch (error) {
+      if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+        throw new BadRequestException('会议室已被预定，无法删除');
+      }
+    }
   }
 }
